@@ -1,0 +1,603 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureVault Dashboard</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fc;color:#203858}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:235px;background:#142e55;color:white;padding:24px 14px;flex-shrink:0}
+.brand{font-size:23px;font-weight:bold;padding:0 10px 30px}
+.brand span{color:#78b7ff}
+.menu-label{font-size:11px;color:#9eb2d0;padding:10px 12px;text-transform:uppercase}
+.nav{display:block;width:100%;text-align:left;background:transparent;color:#d5e1f2;border:0;padding:13px 12px;border-radius:7px;margin-bottom:5px;font-size:14px}
+.nav:hover,.nav.active{background:#2a4d7c;color:white}
+.nav .ico{display:inline-block;width:28px;font-size:17px}
+.sidebar-note{font-size:11px;color:#9eb2d0;line-height:1.6;padding:20px 12px}
+.main{flex:1;min-width:0}
+.topbar{height:70px;background:white;border-bottom:1px solid #e0e8f3;display:flex;align-items:center;justify-content:space-between;padding:0 28px;gap:15px}
+.topbar strong{font-size:17px}
+.top-right{display:flex;align-items:center;gap:15px;font-size:13px;color:#687d9a}
+.avatar{width:34px;height:34px;border-radius:50%;background:#e5efff;display:grid;place-items:center;color:#285b9c;font-weight:bold}
+.content{padding:28px;max-width:1500px;margin:auto}
+.page-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:24px}
+h1{font-size:25px;margin:0 0 8px}
+h2{font-size:18px;margin:0 0 18px}
+h3{font-size:15px;margin:0 0 8px}
+.sub{font-size:13px;color:#778ba8;margin:0;line-height:1.6}
+.btn{border:0;border-radius:7px;padding:11px 15px;background:#2f7ee8;color:white;font-weight:bold}
+.btn-light{background:#edf3fb;color:#315477}
+.btn-danger{background:#fff0f0;color:#b42318}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:24px}
+.card,.panel{background:white;border:1px solid #dfe8f4;border-radius:10px;padding:19px}
+.stat{display:flex;align-items:center;gap:13px;min-height:105px}
+.stat-icon{width:45px;height:45px;border-radius:10px;display:grid;place-items:center;font-size:22px;background:#e8f1ff}
+.stat-label{font-size:12px;color:#7186a3;margin-bottom:8px}
+.stat-value{font-size:24px;font-weight:bold;color:#19375e}
+.stat-note{font-size:11px;color:#7d91ac;margin-top:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.search-row{display:flex;gap:10px;margin-bottom:20px}
+.search-row input{flex:1;min-width:0}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid #d8e3f1;border-radius:7px;background:white;color:#2b4568;outline:none}
+input:focus,select:focus,textarea:focus{border-color:#4288ed}
+input[type=checkbox],input[type=range]{width:auto}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:13px 10px;border-bottom:1px solid #e8eef6}
+th{color:#6b809d;font-weight:600;background:#f8faff}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e5f7ef;color:#18865e;font-size:11px}
+.badge.warn{background:#fff0d8;color:#a96900}
+.badge.blue{background:#e7f0ff;color:#286dce}
+.list-item{padding:13px 0;border-bottom:1px solid #edf1f7;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px}
+.list-item:last-child{border-bottom:0}
+.muted{color:#7a8da8;font-size:12px;line-height:1.6}
+.empty{text-align:center;padding:28px;color:#788ba6}
+.page{display:none}
+.page.active{display:block}
+.feature-card{padding:20px;background:#fff;border:1px solid #dfe8f4;border-radius:10px}
+.feature-icon{font-size:26px;margin-bottom:12px}
+.feature-card p{font-size:12px;color:#7186a3;line-height:1.6}
+.progress{height:8px;background:#e8eef7;border-radius:10px;overflow:hidden;margin:10px 0 15px}
+.progress span{display:block;height:100%;background:#35bf88;width:0%}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field label{display:block;font-size:12px;margin-bottom:7px;color:#607793}
+.field{margin-bottom:14px}
+.full{grid-column:1/-1}
+.footer-note{font-size:11px;color:#8596ad;text-align:center;margin-top:24px}
+.status-message{margin:0 0 18px;padding:12px;border-radius:7px;background:#e7f0ff;color:#285b9c;font-size:13px;display:none}
+.status-message.error{background:#fff0f0;color:#b42318}
+.status-message.success{background:#e5f7ef;color:#18865e}
+.modal-backdrop{position:fixed;inset:0;background:#10244288;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.modal-backdrop.open{display:flex}
+.modal{width:100%;max-width:520px;max-height:90vh;overflow:auto;background:white;border-radius:12px;padding:24px;box-shadow:0 20px 60px #10244230}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-head h2{margin:0}
+.close-btn{border:0;background:#edf3fb;border-radius:7px;padding:7px 11px;color:#315477}
+.member-actions{display:flex;gap:8px;flex-wrap:wrap}
+.notice{padding:12px;border-radius:8px;background:#fff5df;color:#8a5a00;font-size:12px;line-height:1.6;margin-bottom:18px}
+@media(max-width:1050px){.sidebar{width:205px}.stats{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:repeat(2,1fr)}.content{padding:20px}}
+@media(max-width:700px){.layout{display:block}.sidebar{width:100%;padding:13px}.brand{padding:5px 8px 13px}.menu-label,.sidebar-note{display:none}.sidebar nav{display:flex;gap:5px;overflow-x:auto}.nav{min-width:max-content;width:auto;margin:0;padding:10px;font-size:12px}.nav .ico{width:auto;margin-right:5px}.topbar{height:58px;padding:0 14px}.top-right .welcome{display:none}.content{padding:15px}.page-head{align-items:flex-start;flex-direction:column}.stats{gap:9px}.stat{padding:12px;gap:9px}.stat-icon{width:36px;height:36px;font-size:17px}.stat-value{font-size:21px}.grid2,.grid3{grid-template-columns:1fr}.search-row{flex-direction:column}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">🔐 Secure<span>Vault</span></div>
+  <div class="menu-label">Main Menu</div>
+  <nav id="navigation">
+    <button class="nav active" data-page="dashboard"><span class="ico">▦</span>Dashboard</button>
+    <button class="nav" data-page="vault"><span class="ico">🔐</span>My Vault</button>
+    <button class="nav" data-page="generator"><span class="ico">🔑</span>Password Generator</button>
+    <button class="nav" data-page="shared"><span class="ico">♟</span>Shared Credentials</button>
+    <button class="nav" data-page="team"><span class="ico">👥</span>Team Vault</button>
+    <div class="menu-label">Security</div>
+    <button class="nav" data-page="security"><span class="ico">🛡</span>Security Center</button>
+    <button class="nav" data-page="audit"><span class="ico">☷</span>Audit Logs</button>
+    <button class="nav" data-page="analytics"><span class="ico">▥</span>Analytics</button>
+  </nav>
+  <div class="sidebar-note">SecureVault<br>Credential Management System<br><br>Backend-connected dashboard</div>
+</aside>
+
+<div class="main">
+<header class="topbar">
+  <strong id="topTitle">SecureVault Dashboard</strong>
+  <div class="top-right">
+    <span class="welcome" id="welcomeText">Loading user...</span>
+    <div class="avatar" id="userAvatar">U</div>
+    <button class="btn btn-light" id="logoutButton" type="button">Logout</button>
+  </div>
+</header>
+
+<main class="content">
+<div id="statusMessage" class="status-message" role="status"></div>
+
+<section class="page active" id="dashboard">
+  <div class="page-head">
+    <div><h1>Dashboard</h1><p class="sub">Manage your credentials and keep your account secure.</p></div>
+    <button class="btn" onclick="openPage('vault');showCredentialForm()">＋ Add Credential</button>
+  </div>
+  <div class="stats">
+    <div class="card stat"><div class="stat-icon">🔐</div><div><div class="stat-label">Total Credentials</div><div class="stat-value" id="totalCount">0</div><div class="stat-note">Saved credentials</div></div></div>
+    <div class="card stat"><div class="stat-icon">🔑</div><div><div class="stat-label">Strong Passwords</div><div class="stat-value" id="strongCount">0</div><div class="stat-note">8+ characters</div></div></div>
+    <div class="card stat"><div class="stat-icon">⚠️</div><div><div class="stat-label">Weak Passwords</div><div class="stat-value" id="weakCount">0</div><div class="stat-note">Need review</div></div></div>
+    <div class="card stat"><div class="stat-icon">🛡️</div><div><div class="stat-label">API Status</div><div class="stat-value" id="apiStatus" style="font-size:18px">Checking</div><div class="stat-note" id="apiStatusNote">Checking backend connection</div></div></div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><h2>🔐 Recent Credentials</h2><div id="recentCredentials" class="muted">Loading credentials...</div></div>
+    <div class="panel"><h2>🛡️ Security Overview</h2>
+      <div class="list-item"><span>Password Strength</span><strong id="strengthSummary">No data</strong></div>
+      <div class="list-item"><span>Vault Access</span><span class="badge blue">Authenticated</span></div>
+      <div class="list-item"><span>Credential Storage</span><span class="badge blue">Backend API</span></div>
+      <div class="list-item"><span>Security Alerts</span><strong id="alertCount">0</strong></div>
+    </div>
+  </div>
+  <div class="panel"><h2>Quick Access</h2><div class="grid3">
+    <div class="feature-card"><div class="feature-icon">🔑</div><h3>Password Generator</h3><p>Generate a random password.</p><button class="btn" onclick="openPage('generator')">Open Generator</button></div>
+    <div class="feature-card"><div class="feature-icon">🛡️</div><h3>Security Center</h3><p>Review password health.</p><button class="btn" onclick="openPage('security')">View Security</button></div>
+    <div class="feature-card"><div class="feature-icon">👥</div><h3>Team Vault</h3><p>Manage team member demo records.</p><button class="btn" onclick="openPage('team')">Open Team Vault</button></div>
+  </div></div>
+</section>
+
+<section class="page" id="vault">
+  <div class="page-head"><div><h1>My Vault</h1><p class="sub">Manage your saved website and application credentials.</p></div><button class="btn" onclick="showCredentialForm()">＋ Add Credential</button></div>
+  <div id="addFormPanel" class="panel" style="display:none;margin-bottom:20px">
+    <h2>Add Credential</h2>
+    <form id="credentialForm">
+      <div class="form-grid">
+        <div class="field"><label for="site">Website / App Name</label><input id="site" required maxlength="150" placeholder="Example Website"></div>
+        <div class="field"><label for="username">Username / Email</label><input id="username" required maxlength="254" placeholder="demo@example.com"></div>
+        <div class="field"><label for="password">Password</label><input id="password" required type="password" maxlength="1024" autocomplete="new-password"></div>
+        <div class="field"><label for="category">Category</label><select id="category"><option>Website</option><option>Email</option><option>Banking</option><option>Social Media</option><option>Other</option></select></div>
+      </div>
+      <button class="btn" id="saveCredentialButton" type="submit">Save Credential</button>
+      <button class="btn btn-light" type="button" onclick="hideCredentialForm()">Cancel</button>
+    </form>
+    <p class="muted">Use test credentials while verifying the backend integration.</p>
+  </div>
+  <div class="search-row"><input id="searchInput" placeholder="🔎 Search credentials..." aria-label="Search credentials"><select id="filterCategory"><option>All Categories</option><option>Website</option><option>Email</option><option>Banking</option><option>Social Media</option><option>Other</option></select><button class="btn btn-light" type="button" onclick="loadCredentials()">Refresh</button></div>
+  <div class="panel"><h2>My Credentials</h2><div id="vaultList"></div><div id="vaultEmpty" class="empty" style="display:none">No credentials yet.</div></div>
+</section>
+
+<section class="page" id="generator">
+  <div class="page-head"><div><h1>Password Generator</h1><p class="sub">Create a random password using your selected options.</p></div></div>
+  <div class="panel" style="max-width:650px">
+    <h2>Generate Password</h2>
+    <div class="field"><label for="generatedPassword">Generated Password</label><input id="generatedPassword" readonly placeholder="Click Generate Password"></div>
+    <div class="field"><label for="passLength">Password Length: <span id="lengthValue">16</span></label><input type="range" id="passLength" min="8" max="32" value="16"></div>
+    <div class="field"><label><input type="checkbox" id="uppercase" checked> Include uppercase letters</label></div>
+    <div class="field"><label><input type="checkbox" id="lowercase" checked> Include lowercase letters</label></div>
+    <div class="field"><label><input type="checkbox" id="numbers" checked> Include numbers</label></div>
+    <div class="field"><label><input type="checkbox" id="symbols" checked> Include symbols</label></div>
+    <button class="btn" onclick="generatePassword()">Generate Password</button>
+    <button class="btn btn-light" onclick="copyGenerated()">Copy Password</button>
+    <p class="muted" id="generatorMessage">Generated passwords are not saved automatically.</p>
+  </div>
+</section>
+
+<section class="page" id="shared">
+  <div class="page-head"><div><h1>Shared Credentials</h1><p class="sub">Manage credentials shared with you or by you.</p></div></div>
+  <div class="panel"><h2>Shared With Me</h2><div class="empty">Credential sharing APIs are not implemented yet.</div></div>
+</section>
+
+<section class="page" id="team">
+  <div class="page-head"><div><h1>Team Vault</h1><p class="sub">Organize credential access for team members.</p><button class="btn" onclick="openTeamModal()">＋ Add Team Member</button></div></div>
+  <div class="panel">
+    <h2>Team Access Management</h2>
+    <div class="stats">
+      <div class="card stat"><div class="stat-icon">👥</div><div><div class="stat-label">Team Members</div><div class="stat-value" id="teamCount">0</div></div></div>
+      <div class="card stat"><div class="stat-icon">🔐</div><div><div class="stat-label">Shared Items</div><div class="stat-value" id="sharedCount">0</div></div></div>
+      <div class="card stat"><div class="stat-icon">⚙️</div><div><div class="stat-label">Permission Rules</div><div class="stat-value" id="permissionCount">0</div></div></div>
+      <div class="card stat"><div class="stat-icon">🔒</div><div><div class="stat-label">Mode</div><div class="stat-value" style="font-size:17px">Demo</div></div></div>
+    </div>
+    <div class="search-row"><input id="teamSearch" placeholder="Search team members..." aria-label="Search team members"><select id="teamRoleFilter"><option value="All">All Roles</option><option value="Viewer">Viewer</option><option value="Editor">Editor</option><option value="Admin">Admin</option></select></div>
+    <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody id="teamMembersList"></tbody></table></div>
+    <div id="teamEmpty" class="empty">No team members added. Use “Add Team Member” to create a demo record.</div>
+  </div>
+  <div class="panel"><h2>Team Permissions</h2><div class="grid3">
+    <div class="feature-card"><div class="feature-icon">👁️</div><h3>Viewer</h3><p>Can view assigned items in the future backend implementation.</p></div>
+    <div class="feature-card"><div class="feature-icon">✏️</div><h3>Editor</h3><p>Can edit assigned items when server-side permissions are implemented.</p></div>
+    <div class="feature-card"><div class="feature-icon">🛡️</div><h3>Admin</h3><p>Administrative permissions must be enforced by the backend.</p></div>
+  </div></div>
+</section>
+
+<section class="page" id="security">
+  <div class="page-head"><div><h1>Security Center</h1><p class="sub">Review password health and security implementation status.</p></div></div>
+  <div class="stats">
+    <div class="card stat"><div class="stat-icon">🔑</div><div><div class="stat-label">Strong Passwords</div><div class="stat-value" id="securityStrong">0</div></div></div>
+    <div class="card stat"><div class="stat-icon">⚠️</div><div><div class="stat-label">Weak Passwords</div><div class="stat-value" id="securityWeak">0</div></div></div>
+    <div class="card stat"><div class="stat-icon">🔔</div><div><div class="stat-label">Security Alerts</div><div class="stat-value">0</div></div></div>
+    <div class="card stat"><div class="stat-icon">🔐</div><div><div class="stat-label">MFA</div><div class="stat-value" style="font-size:18px">Check API</div></div></div>
+  </div>
+  <div class="panel"><h2>Password Health</h2><p class="sub">Length is only a basic indicator, not a complete password-strength assessment.</p><div class="progress"><span id="healthBar"></span></div><strong id="healthText">No credentials to analyze yet.</strong></div>
+</section>
+
+<section class="page" id="audit">
+  <div class="page-head"><div><h1>Audit Logs</h1><p class="sub">Review activity related to vault access and credential changes.</p></div></div>
+  <div class="panel"><h2>Recent Activity</h2><p class="muted">Actual audit logs require a backend audit-log API. This page does not display database audit records.</p></div>
+</section>
+
+<section class="page" id="analytics">
+  <div class="page-head"><div><h1>Analytics</h1><p class="sub">Overview of saved credentials and password health.</p></div></div>
+  <div class="stats">
+    <div class="card stat"><div class="stat-icon">▦</div><div><div class="stat-label">Total Credentials</div><div class="stat-value" id="analyticsTotal">0</div></div></div>
+    <div class="card stat"><div class="stat-icon">🔑</div><div><div class="stat-label">Strong Passwords</div><div class="stat-value" id="analyticsStrong">0</div></div></div>
+    <div class="card stat"><div class="stat-icon">⚠️</div><div><div class="stat-label">Weak Passwords</div><div class="stat-value" id="analyticsWeak">0</div></div></div>
+    <div class="card stat"><div class="stat-icon">📈</div><div><div class="stat-label">Password Health</div><div class="stat-value" id="analyticsHealth">0%</div></div></div>
+  </div>
+  <div class="panel"><h2>Password Health Overview</h2><div class="progress"><span id="analyticsBar"></span></div><p class="sub" id="analyticsDescription">Load credentials to see the overview.</p></div>
+</section>
+<p class="footer-note">SecureVault · Spring Boot API dashboard</p>
+</main>
+</div>
+</div>
+
+<div class="modal-backdrop" id="teamModal">
+  <div class="modal">
+    <div class="modal-head"><h2 id="teamModalTitle">Add Team Member</h2><button class="close-btn" type="button" onclick="closeTeamModal()">✕</button></div>
+    <form id="teamForm">
+      <div class="field"><label for="teamName">Full Name</label><input id="teamName" required maxlength="100" placeholder="Team member name"></div>
+      <div class="field"><label for="teamEmail">Email</label><input id="teamEmail" type="email" required maxlength="254" placeholder="member@example.com"></div>
+      <div class="field"><label for="teamRole">Role</label><select id="teamRole"><option>Viewer</option><option>Editor</option><option>Admin</option></select></div>
+      <div class="member-actions"><button class="btn" type="submit">Save Team  Member</button><button class="btn btn-light" type="button" onclick="closeTeamModal()">Cancel</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+const API_BASE = "http://localhost:8080/api";
+const TOKEN_KEY = "jwtToken";
+let credentials = [];
+let teamMembers = [];
+let editingMemberId = null;
+let isLoadingCredentials = false;
+
+const pageTitles = {
+ dashboard:"SecureVault Dashboard",vault:"My Vault",generator:"Password Generator",
+ shared:"Shared Credentials",team:"Team Vault",security:"Security Center",
+ audit:"Audit Logs",analytics:"Analytics"
+};
+
+function getToken(){return localStorage.getItem(TOKEN_KEY)}
+
+function showMessage(message,type="info"){
+ const box=document.getElementById("statusMessage");
+ box.textContent=message;
+ box.className="status-message"+(type==="error"?" error":type==="success"?" success":"");
+ box.style.display="block";
+}
+function clearMessage(){
+ const box=document.getElementById("statusMessage");
+ box.textContent="";box.style.display="none";box.className="status-message";
+}
+function redirectToLogin(){
+ localStorage.removeItem(TOKEN_KEY);
+ window.location.replace("login.html");
+}
+
+async function apiRequest(path,options={}){
+ const token=getToken();
+ if(!token){redirectToLogin();throw new Error("Please log in again.")}
+ const headers={
+  "Authorization":"Bearer "+token,
+  ...(options.body?{"Content-Type":"application/json"}:{}),
+  ...(options.headers||{})
+ };
+ let response;
+ try{
+  response=await fetch(API_BASE+path,{...options,headers});
+ }catch(error){
+  document.getElementById("apiStatus").textContent="Offline";
+  document.getElementById("apiStatusNote").textContent="Cannot reach backend";
+  throw new Error("Spring Boot backend is not reachable on port 8080.");
+ }
+ if(response.status===401||response.status===403){
+  redirectToLogin();throw new Error("Session expired or access denied. Please log in again.");
+ }
+ if(!response.ok){
+  let message="Request failed ("+response.status+").";
+  try{const data=await response.json();message=data.message||data.error||message;}
+  catch(_){try{const t=await response.text();if(t)message=t}catch(__){}}
+  throw new Error(message);
+ }
+ if(response.status===204)return null;
+ const type=response.headers.get("content-type")||"";
+ if(type.includes("application/json"))return response.json();
+ const text=await response.text();
+ if(!text)return null;
+ try{return JSON.parse(text)}catch(_){return text}
+}
+
+function normalizeCredential(item){
+ return {
+  ...item,
+  id:item.id??item.credentialId,
+  website:String(item.website??item.siteName??item.title??"Unnamed credential"),
+  username:String(item.username??item.userName??item.email??""),
+  password:typeof item.password==="string"?item.password:"",
+  category:String(item.category??"Other")
+ };
+}
+function isWeak(item){return !item.password||item.password.length<8}
+
+function openPage(pageId){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.querySelectorAll(".nav").forEach(b=>b.classList.remove("active"));
+ const page=document.getElementById(pageId);
+ if(page)page.classList.add("active");
+ const nav=document.querySelector('.nav[data-page="'+pageId+'"]');
+ if(nav)nav.classList.add("active");
+ document.getElementById("topTitle").textContent=pageTitles[pageId]||"SecureVault";
+ clearMessage();renderAll();
+}
+document.querySelectorAll(".nav").forEach(button=>{
+ button.addEventListener("click",()=>openPage(button.dataset.page));
+});
+
+async function loadCurrentUser(){
+ const user=await apiRequest("/auth/me");
+ const name=user.name||user.fullName||user.email||"User";
+ document.getElementById("welcomeText").textContent="Welcome, "+name;
+ document.getElementById("userAvatar").textContent=name.charAt(0).toUpperCase();
+ document.getElementById("apiStatus").textContent="Connected";
+ document.getElementById("apiStatusNote").textContent="Authenticated backend";
+}
+
+async function loadCredentials(){
+ if(isLoadingCredentials)return;
+ isLoadingCredentials=true;
+ document.getElementById("vaultList").innerHTML='<p class="muted">Loading credentials...</p>';
+ try{
+  const data=await apiRequest("/vault/credentials");
+  let rows=Array.isArray(data)?data:
+   Array.isArray(data?.content)?data.content:
+   Array.isArray(data?.credentials)?data.credentials:null;
+  if(!rows)throw new Error("Unexpected response from credentials API.");
+  credentials=rows.map(normalizeCredential);
+  document.getElementById("apiStatus").textContent="Connected";
+  document.getElementById("apiStatusNote").textContent="Credentials loaded";
+  renderAll();
+ }catch(error){
+  document.getElementById("vaultList").innerHTML="";
+  document.getElementById("vaultEmpty").style.display="block";
+  document.getElementById("vaultEmpty").textContent="Could not load credentials from backend.";
+  if(getToken())showMessage("Load failed: "+error.message,"error");
+ }finally{isLoadingCredentials=false}
+}
+
+function renderAll(){
+ const total=credentials.length;
+ const weak=credentials.filter(isWeak).length;
+ const strong=total-weak;
+ const health=total?Math.round(strong/total*100):0;
+ const values={
+  totalCount:total,strongCount:strong,weakCount:weak,
+  securityStrong:strong,securityWeak:weak,
+  analyticsTotal:total,analyticsStrong:strong,analyticsWeak:weak,
+  analyticsHealth:health+"%"
+ };
+ Object.entries(values).forEach(([id,value])=>{
+  const el=document.getElementById(id);if(el)el.textContent=value;
+ });
+ ["healthBar","analyticsBar"].forEach(id=>{
+  const el=document.getElementById(id);if(el)el.style.width=health+"%";
+ });
+ document.getElementById("strengthSummary").textContent=total?(weak?"Needs review":"Strong by length"):"No data";
+ document.getElementById("healthText").textContent=total?health+"% of passwords are at least 8 characters long.":"No credentials to analyze yet.";
+ document.getElementById("analyticsDescription").textContent=total?strong+" strong by length and "+weak+" needing review.":"Add credentials to see the overview.";
+ renderVault();renderRecent();renderTeamMembers();
+}
+
+function renderRecent(){
+ const box=document.getElementById("recentCredentials");box.innerHTML="";
+ if(!credentials.length){box.textContent="No credentials added yet.";return}
+ credentials.slice(-4).reverse().forEach(item=>{
+  const row=document.createElement("div");row.className="list-item";
+  const name=document.createElement("span");name.textContent=item.website;
+  const cat=document.createElement("span");cat.className="badge blue";cat.textContent=item.category;
+  row.append(name,cat);box.appendChild(row);
+ });
+}
+
+function renderVault(){
+ const list=document.getElementById("vaultList");
+ const empty=document.getElementById("vaultEmpty");
+ if(!list||!empty)return;
+ const term=document.getElementById("searchInput").value.trim().toLowerCase();
+ const category=document.getElementById("filterCategory").value;
+ const filtered=credentials.filter(item=>
+  (item.website.toLowerCase().includes(term)||item.username.toLowerCase().includes(term))&&
+  (category==="All Categories"||item.category===category)
+ );
+ list.innerHTML="";empty.style.display=filtered.length?"none":"block";
+ if(!filtered.length){empty.innerHTML="🔐<h3>No Credentials Found</h3>Add a credential or change your search/filter.";return}
+ const wrap=document.createElement("div");wrap.className="table-wrap";
+ const table=document.createElement("table");
+ table.innerHTML="<thead><tr><th>Website / App</th><th>Username</th><th>Category</th><th>Password Health</th><th>Action</th></tr></thead>";
+ const tbody=document.createElement("tbody");
+ filtered.forEach(item=>{
+  const tr=document.createElement("tr");
+  [item.website,item.username,item.category].forEach(value=>{
+   const td=document.createElement("td");td.textContent=value;tr.appendChild(td);
+  });
+  const health=document.createElement("td");
+  const badge=document.createElement("span");badge.className="badge "+(isWeak(item)?"warn":"");
+  badge.textContent=isWeak(item)?"Needs review":"8+ characters";health.appendChild(badge);tr.appendChild(health);
+  const action=document.createElement("td");
+  const view=document.createElement("button");view.className="btn btn-light";view.textContent="View";
+  view.addEventListener("click",()=>alert("Website: "+item.website+"\nUsername: "+item.username+"\nPassword: Hidden for safety."));
+  const del=document.createElement("button");del.className="btn btn-danger";del.style.marginLeft="5px";del.textContent="Delete";
+  del.addEventListener("click",async()=>{
+   if(item.id==null){showMessage("Credential ID missing in backend response.","error");return}
+   if(!confirm("Delete "+item.website+"?"))return;
+   del.disabled=true;
+   try{
+    await apiRequest("/vault/credentials/"+encodeURIComponent(item.id),{method:"DELETE"});
+    credentials=credentials.filter(c=>String(c.id)!==String(item.id));
+    renderAll();showMessage("Credential deleted successfully.","success");
+   }catch(error){showMessage("Delete failed: "+error.message,"error");del.disabled=false}
+  });
+  action.append(view,del);tr.appendChild(action);tbody.appendChild(tr);
+ });
+ table.appendChild(tbody);wrap.appendChild(table);list.appendChild(wrap);
+}
+
+function showCredentialForm(){
+ openPage("vault");
+ document.getElementById("addFormPanel").style.display="block";
+ document.getElementById("site").focus();
+}
+function hideCredentialForm(){
+ document.getElementById("addFormPanel").style.display="none";
+ document.getElementById("credentialForm").reset();
+}
+
+document.getElementById("credentialForm").addEventListener("submit",async event=>{
+ event.preventDefault();clearMessage();
+ const website=document.getElementById("site").value.trim();
+ const username=document.getElementById("username").value.trim();
+ const password=document.getElementById("password").value;
+ const category=document.getElementById("category").value;
+ const button=document.getElementById("saveCredentialButton");
+ if(!website||!username||!password){showMessage("Fill in all required fields.","error");return}
+ button.disabled=true;button.textContent="Saving...";
+ try{
+  await apiRequest("/vault/credentials",{
+   method:"POST",body:JSON.stringify({website,username,password,category})
+  });
+  await loadCredentials();hideCredentialForm();
+  showMessage("Credential saved through backend API.","success");
+ }catch(error){showMessage("Save failed: "+error.message,"error")}
+ finally{button.disabled=false;button.textContent="Save Credential"}
+});
+
+document.getElementById("searchInput").addEventListener("input",renderVault);
+document.getElementById("filterCategory").addEventListener("change",renderVault);
+document.getElementById("logoutButton").addEventListener("click",()=>{
+ localStorage.removeItem(TOKEN_KEY);window.location.replace("login.html");
+});
+
+function generatePassword(){
+ const groups=[];
+ if(document.getElementById("uppercase").checked)groups.push("ABCDEFGHJKLMNPQRSTUVWXYZ");
+ if(document.getElementById("lowercase").checked)groups.push("abcdefghijkmnopqrstuvwxyz");
+ if(document.getElementById("numbers").checked)groups.push("23456789");
+ if(document.getElementById("symbols").checked)groups.push("!@#$%&*+-_?");
+ const message=document.getElementById("generatorMessage");
+ if(!groups.length){message.textContent="Select at least one character option.";return}
+ const length=Number(document.getElementById("passLength").value);
+ const all=groups.join("");
+ const randomIndex=max=>{
+  const array=new Uint32Array(1);crypto.getRandomValues(array);return array[0]%max;
+ };
+ const result=groups.map(group=>group[randomIndex(group.length)]);
+ while(result.length<length)result.push(all[randomIndex(all.length)]);
+ for(let i=result.length-1;i>0;i--){
+  const j=randomIndex(i+1);[result[i],result[j]]=[result[j],result[i]];
+ }
+ document.getElementById("generatedPassword").value=result.join("");
+ message.textContent="Generated password is not saved automatically.";
+}
+document.getElementById("passLength").addEventListener("input",function(){
+ document.getElementById("lengthValue").textContent=this.value;
+});
+async function copyGenerated(){
+ const input=document.getElementById("generatedPassword");
+ const message=document.getElementById("generatorMessage");
+ if(!input.value){message.textContent="Generate a password first.";return}
+ try{await navigator.clipboard.writeText(input.value);message.textContent="Copied to clipboard."}
+ catch(_){input.select();message.textContent=document.execCommand("copy")?"Copied.":"Copy it manually."}
+}
+
+/* Team Vault demo UI only. These records are NOT stored in PostgreSQL. */
+function openTeamModal(member=null){
+ editingMemberId=member?member.id:null;
+ document.getElementById("teamModalTitle").textContent=member?"Edit Team Member":"Add Team Member";
+ document.getElementById("teamName").value=member?.name||"";
+ document.getElementById("teamEmail").value=member?.email||"";
+ document.getElementById("teamRole").value=member?.role||"Viewer";
+ document.getElementById("teamModal").classList.add("open");
+}
+function closeTeamModal(){
+ document.getElementById("teamModal").classList.remove("open");
+ document.getElementById("teamForm").reset();
+ editingMemberId=null;
+}
+document.getElementById("teamModal").addEventListener("click",event=>{
+ if(event.target.id==="teamModal")closeTeamModal();
+});
+document.getElementById("teamForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const name=document.getElementById("teamName").value.trim();
+ const email=document.getElementById("teamEmail").value.trim();
+ const role=document.getElementById("teamRole").value;
+ if(!name||!email)return;
+ const duplicate=teamMembers.some(m=>m.email.toLowerCase()===email.toLowerCase()&&m.id!==editingMemberId);
+ if(duplicate){showMessage("A team member with this email already exists.","error");return}
+ if(editingMemberId){
+  teamMembers=teamMembers.map(m=>m.id===editingMemberId?{...m,name,email,role}:m);
+ }else{
+  teamMembers.push({id:crypto.randomUUID(),name,email,role,status:"Demo only"});
+ }
+ closeTeamModal();renderTeamMembers();
+ showMessage("Team member updated in demo UI only; not saved to PostgreSQL.","success");
+});
+function renderTeamMembers(){
+ const body=document.getElementById("teamMembersList");
+ const empty=document.getElementById("teamEmpty");
+ if(!body)return;
+ const term=(document.getElementById("teamSearch")?.value||"").trim().toLowerCase();
+ const role=document.getElementById("teamRoleFilter")?.value||"All";
+ const rows=teamMembers.filter(m=>
+  (m.name.toLowerCase().includes(term)||m.email.toLowerCase().includes(term))&&
+  (role==="All"||m.role===role)
+ );
+ body.innerHTML="";
+ rows.forEach(member=>{
+  const tr=document.createElement("tr");
+  [member.name,member.email,member.role].forEach(value=>{
+   const td=document.createElement("td");td.textContent=value;tr.appendChild(td);
+  });
+  const status=document.createElement("td");
+  const badge=document.createElement("span");badge.className="badge warn";badge.textContent="Demo only";status.appendChild(badge);tr.appendChild(status);
+  const actions=document.createElement("td");
+  const edit=document.createElement("button");edit.className="btn btn-light";edit.textContent="Edit";
+  edit.addEventListener("click",()=>openTeamModal(member));
+  const remove=document.createElement("button");remove.className="btn btn-danger";remove.style.marginLeft="5px";remove.textContent="Remove";
+  remove.addEventListener("click",()=>{
+   if(!confirm("Remove "+member.name+" from this demo list?"))return;
+   teamMembers=teamMembers.filter(m=>m.id!==member.id);renderTeamMembers();
+  });
+  actions.append(edit,remove);tr.appendChild(actions);body.appendChild(tr);
+ });
+ empty.style.display=rows.length?"none":"block";
+ empty.textContent=teamMembers.length?"No matching team members.":"No team members added. Use “Add Team Member” to create a demo record.";
+ document.getElementById("teamCount").textContent=teamMembers.length;
+ document.getElementById("sharedCount").textContent="0";
+ document.getElementById("permissionCount").textContent=teamMembers.length;
+}
+document.getElementById("teamSearch").addEventListener("input",renderTeamMembers);
+document.getElementById("teamRoleFilter").addEventListener("change",renderTeamMembers);
+
+async function initializeDashboard(){
+ if(!getToken()){window.location.replace("login.html");return}
+ try{
+  await loadCurrentUser();
+  await loadCredentials();
+ }catch(error){
+  if(getToken())showMessage("Could not initialize dashboard: "+error.message,"error");
+ }
+}
+renderAll();
+initializeDashboard();
+</script>
+</body>
+</html>

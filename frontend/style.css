@@ -1,0 +1,708 @@
+
+/* ==========================================
+   SECUREVAULT - COMPLETE WEBSITE STYLES
+   Homepage + Login + Register + MFA
+   ========================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --navy: #142e55;
+    --blue: #2878f0;
+    --blue-dark: #1765d5;
+    --background: #f4f7fc;
+    --border: #dfe8f4;
+    --text: #203858;
+    --muted: #7186a3;
+    --white: #ffffff;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--text);
+    background: var(--background);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* ==========================================
+   HOMEPAGE NAVBAR
+   ========================================== */
+
+.navbar {
+    min-height: 72px;
+    padding: 0 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 700;
+    color: var(--navy);
+    white-space: nowrap;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 27px;
+}
+
+.nav-links a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 15px;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--blue);
+}
+
+.login-btn {
+    background: transparent;
+    color: var(--blue);
+    border: 1px solid var(--blue);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.login-btn:hover {
+    background: #eaf2ff;
+}
+
+/* ==========================================
+   BUTTONS
+   ========================================== */
+
+.primary-btn,
+.secondary-btn {
+    display: inline-block;
+    border-radius: 8px;
+    padding: 13px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.primary-btn {
+    background: var(--blue);
+    color: var(--white);
+    border: 1px solid var(--blue);
+}
+
+.primary-btn:hover {
+    background: var(--blue-dark);
+    transform: translateY(-1px);
+}
+
+.secondary-btn {
+    background: var(--white);
+    color: var(--navy);
+    border: 1px solid var(--border);
+}
+
+.secondary-btn:hover {
+    background: #eaf2ff;
+}
+
+/* ==========================================
+   HOMEPAGE HERO SECTION
+   ========================================== */
+
+.hero {
+    max-width: 1250px;
+    min-height: 510px;
+    margin: auto;
+    padding: 75px 40px;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    align-items: center;
+    gap: 55px;
+}
+
+.hero-content h1 {
+    font-size: clamp(38px, 4.5vw, 58px);
+    line-height: 1.15;
+    letter-spacing: -1.5px;
+    color: var(--navy);
+    margin: 0 0 22px;
+}
+
+.hero-content h1 span {
+    color: var(--blue);
+}
+
+.hero-content > p {
+    max-width: 610px;
+    font-size: 17px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin: 0 0 28px;
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 13px;
+}
+
+/* ==========================================
+   SECURITY CARD
+   ========================================== */
+
+.hero-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 15px 45px rgba(29, 66, 120, 0.10);
+}
+
+.lock-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 22px;
+    border-radius: 25px;
+    display: grid;
+    place-items: center;
+    background: #eaf2ff;
+    font-size: 48px;
+}
+
+.hero-card h2 {
+    font-size: 26px;
+    color: var(--navy);
+    margin: 0 0 15px;
+}
+
+.hero-card p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+/* ==========================================
+   FEATURES SECTION
+   ========================================== */
+
+.features {
+    padding: 65px 7%;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+}
+
+.features > h2 {
+    text-align: center;
+    font-size: 32px;
+    color: var(--navy);
+    margin: 0 0 38px;
+}
+
+.feature-container {
+    max-width: 1150px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.feature-card {
+    padding: 28px 24px;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(29, 66, 120, 0.08);
+}
+
+.feature-card h3 {
+    color: var(--navy);
+    font-size: 18px;
+    margin: 0 0 13px;
+}
+
+.feature-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+    margin: 0;
+}
+
+/* ==========================================
+   FOOTER
+   ========================================== */
+
+footer {
+    padding: 22px 15px;
+    text-align: center;
+    background: var(--navy);
+}
+
+footer p {
+    color: #d5e1f2;
+    font-size: 13px;
+    margin: 0;
+}
+
+/* ==========================================
+   LOGIN / REGISTER / MFA PAGE
+   ========================================== */
+
+.auth-container {
+    min-height: 100vh;
+    padding: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #edf4ff, #f7f9fd);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 35px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 15px 45px rgba(29, 66, 120, 0.10);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.auth-logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 25px;
+}
+
+.auth-header h2 {
+    color: var(--navy);
+    font-size: 28px;
+    margin: 0 0 10px;
+}
+
+.auth-header p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* LOGIN INPUTS */
+
+.input-group {
+    margin-bottom: 18px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #d3e0f3;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-group input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(40, 120, 240, 0.10);
+}
+
+/* LOGIN / REGISTER SUBMIT BUTTON */
+
+.auth-submit {
+    width: 100%;
+    margin-top: 5px;
+}
+
+.secondary-btn.auth-submit {
+    margin-top: 12px;
+}
+
+/* SWITCH BETWEEN LOGIN AND REGISTER */
+
+.auth-switch {
+    margin-top: 23px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.auth-switch button {
+    border: none;
+    background: transparent;
+    color: var(--blue);
+    font-weight: 600;
+    margin-left: 5px;
+    padding: 5px;
+}
+
+.auth-switch button:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================
+   DASHBOARD SUPPORTING STYLES
+   ========================================== */
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    background: var(--navy);
+    color: var(--white);
+    padding: 22px 14px;
+}
+
+.sidebar .brand {
+    color: var(--white);
+    font-size: 23px;
+    font-weight: 700;
+    padding: 0 10px 25px;
+}
+
+.sidebar .brand span {
+    color: #78b7ff;
+}
+
+.nav {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 13px 14px;
+    margin-bottom: 6px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #d5e1f2;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav:hover,
+.nav.active {
+    color: white;
+    background: #2a4d7c;
+}
+
+.main {
+    flex: 1;
+    min-width: 0;
+    padding: 28px;
+}
+
+.topbar {
+    min-height: 70px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+}
+
+.panel,
+.card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 25px 0;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: #e5efff;
+    font-size: 23px;
+}
+
+.content-grid,
+.grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.search-row,
+.filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.search-row input,
+.filters input {
+    flex: 1;
+}
+
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #e8eef6;
+}
+
+th {
+    background: #f8faff;
+    color: var(--muted);
+}
+
+.empty {
+    text-align: center;
+    padding: 28px 10px;
+    color: var(--muted);
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #e5f7ef;
+    color: #18865e;
+    font-size: 11px;
+}
+
+.badge.warn {
+    background: #fff0d8;
+    color: #a96900;
+}
+
+.badge.blue {
+    background: #e7f0ff;
+    color: #286dce;
+}
+
+/* ==========================================
+   RESPONSIVE TABLET
+   ========================================== */
+
+@media (max-width: 1000px) {
+    .hero {
+        grid-template-columns: 1fr 0.8fr;
+        gap: 25px;
+        padding: 55px 25px;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sidebar {
+        width: 220px;
+    }
+
+    .content-grid,
+    .grid2 {
+        grid-template-columns: 1fr;
+    }
+
+    .main {
+        padding: 22px;
+    }
+}
+
+/* ==========================================
+   RESPONSIVE MOBILE
+   ========================================== */
+
+@media (max-width: 700px) {
+    .navbar {
+        padding: 16px 5%;
+        flex-wrap: wrap;
+    }
+
+    .logo {
+        font-size: 22px;
+    }
+
+    .nav-links {
+        width: 100%;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .nav-links a {
+        font-size: 13px;
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+        padding: 40px 20px;
+        gap: 30px;
+    }
+
+    .hero-content h1 {
+        font-size: 38px;
+    }
+
+    .hero-content > p {
+        font-size: 15px;
+    }
+
+    .buttons {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .buttons button {
+        width: 100%;
+    }
+
+    .hero-card {
+        padding: 30px 20px;
+    }
+
+    .features {
+        padding: 45px 20px;
+    }
+
+    .features > h2 {
+        font-size: 27px;
+    }
+
+    .feature-container,
+    .grid3 {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-container {
+        padding: 15px;
+    }
+
+    .auth-card {
+        padding: 25px 20px;
+    }
+
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        gap: 5px;
+        padding: 10px;
+    }
+
+    .sidebar .brand {
+        display: none;
+    }
+
+    .nav {
+        width: auto;
+        flex-shrink: 0;
+        white-space: nowrap;
+        margin: 0;
+        padding: 10px;
+    }
+
+    .main {
+        padding: 16px 12px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .search-row,
+    .filters {
+        flex-direction: column;
+    }
+
+    .topbar {
+        padding: 0 15px;
+    }
+
+    .panel,
+    .card {
+        padding: 16px;
+    }
+}

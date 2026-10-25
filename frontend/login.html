@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SecureVault - Login</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="auth-container">
+
+        <div class="auth-card">
+
+            <div class="auth-header">
+                <div class="auth-logo">🔐 SecureVault</div>
+                <h2 id="authTitle">Login</h2>
+                <p id="authSubtitle">
+                    Access your secure vault
+                </p>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm" onsubmit="loginUser(event)">
+
+                <div class="input-group">
+                    <label>Email</label>
+
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="Enter your email"
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="primary-btn auth-submit">
+                    Login
+                </button>
+
+            </form>
+
+
+            <!-- MFA FORM -->
+            <form
+                id="mfaForm"
+                onsubmit="verifyMfaLogin(event)"
+                style="display: none;">
+
+                <div class="input-group">
+
+                    <label>MFA Verification Code</label>
+
+                    <input
+                        type="text"
+                        id="mfaCode"
+                        placeholder="Enter 6-digit code"
+                        maxlength="6"
+                        pattern="[0-9]{6}"
+                        required
+                    >
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="primary-btn auth-submit">
+                    Verify MFA
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary-btn auth-submit"
+                    onclick="backToLogin()">
+                    Back to Login
+                </button>
+
+            </form>
+
+
+            <!-- REGISTER FORM -->
+            <form
+                id="registerForm"
+                onsubmit="registerUser(event)"
+                style="display: none;">
+
+                <div class="input-group">
+
+                    <label>Name</label>
+
+                    <input
+                        type="text"
+                        id="registerName"
+                        placeholder="Enter your name"
+                        required
+                    >
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>Email</label>
+
+                    <input
+                        type="email"
+                        id="registerEmail"
+                        placeholder="Enter your email"
+                        required
+                    >
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>Password</label>
+
+                    <input
+                        type="password"
+                        id="registerPassword"
+                        placeholder="Create password"
+                        required
+                    >
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>Confirm Password</label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Confirm password"
+                        required
+                    >
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="primary-btn auth-submit">
+                    Register
+                </button>
+
+            </form>
+
+
+            <!-- SWITCH LOGIN / REGISTER -->
+
+            <div class="auth-switch">
+
+                <span id="switchText">
+                    Don't have an account?
+                </span>
+
+                <button
+                    type="button"
+                    id="switchButton"
+                    onclick="showRegister()">
+                    Register
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+<script>
+
+let pendingEmail = "";
+let pendingPassword = "";
+
+
+/* =========================
+   LOGIN
+========================= */
+
+async function loginUser(event) {
+
+    event.preventDefault();
+
+    const email =
+        document.getElementById("loginEmail").value;
+
+    const password =
+        document.getElementById("loginPassword").value;
+
+    try {
+
+        const response = await fetch(
+            "http://localhost:8080/api/auth/login",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            alert(
+                typeof data === "string"
+                    ? data
+                    : "Login failed"
+            );
+
+            return;
+        }
+
+
+        /*
+         * MFA is enabled for this account.
+         */
+
+        if (data.mfaRequired === true) {
+
+            pendingEmail = email;
+            pendingPassword = password;
+
+            document
+                .getElementById("loginForm")
+                .style.display = "none";
+
+            document
+                .getElementById("mfaForm")
+                .style.display = "block";
+
+            document
+                .getElementById("authTitle")
+                .innerText = "MFA Verification";
+
+            document
+                .getElementById("authSubtitle")
+                .innerText =
+                "Enter your 6-digit verification code";
+
+            document
+                .getElementById("switchText")
+                .style.display = "none";
+
+            document
+                .getElementById("switchButton")
+                .style.display = "none";
+
+            return;
+        }
+
+
+        /*
+         * MFA is not enabled.
+         * Login completed normally.
+         */
+
+        if (data.token) {
+
+            localStorage.setItem(
+                "jwtToken",
+                data.token
+            );
+
+            alert("Login successful!");
+
+            window.location.href =
+                "vault.html";
+
+            return;
+        }
+
+        alert("Unexpected login response.");
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to connect to backend."
+        );
+    }
+}
+
+
+/* =========================
+   MFA LOGIN
+========================= */
+
+async function verifyMfaLogin(event) {
+
+    event.preventDefault();
+
+    const mfaCode =
+        document.getElementById("mfaCode").value;
+
+    if (!/^\d{6}$/.test(mfaCode)) {
+
+        alert(
+            "Please enter a valid 6-digit MFA code."
+        );
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "http://localhost:8080/api/auth/login/mfa",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    email: pendingEmail,
+
+                    password: pendingPassword,
+
+                    mfaCode: mfaCode
+
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            alert(
+                typeof data === "string"
+                    ? data
+                    : "MFA verification failed"
+            );
+
+            return;
+        }
+
+
+        if (data.token) {
+
+            localStorage.setItem(
+                "jwtToken",
+                data.token
+            );
+
+            alert(
+                "MFA verification successful!"
+            );
+
+            window.location.href =
+                "vault.html";
+
+            return;
+        }
+
+        alert(
+            "Invalid MFA login response."
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to connect to backend."
+        );
+    }
+}
+
+
+/* =========================
+   BACK TO LOGIN
+========================= */
+
+function backToLogin() {
+
+    document
+        .getElementById("mfaForm")
+        .style.display = "none";
+
+    document
+        .getElementById("loginForm")
+        .style.display = "block";
+
+    document
+        .getElementById("authTitle")
+        .innerText = "Login";
+
+    document
+        .getElementById("authSubtitle")
+        .innerText =
+        "Access your secure vault";
+
+    document
+        .getElementById("switchText")
+        .style.display = "inline";
+
+    document
+        .getElementById("switchButton")
+        .style.display = "inline-block";
+
+    pendingEmail = "";
+    pendingPassword = "";
+
+    document
+        .getElementById("mfaCode")
+        .value = "";
+}
+
+
+/* =========================
+   REGISTER
+========================= */
+
+async function registerUser(event) {
+
+    event.preventDefault();
+
+    const name =
+        document.getElementById("registerName").value;
+
+    const email =
+        document.getElementById("registerEmail").value;
+
+    const password =
+        document.getElementById("registerPassword").value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+
+    if (password !== confirmPassword) {
+
+        alert(
+            "Passwords do not match."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            "http://localhost:8080/api/auth/register",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    name: name,
+
+                    email: email,
+
+                    password: password
+
+                })
+            }
+        );
+
+        const data =
+            await response.text();
+
+        if (!response.ok) {
+
+            alert(data);
+
+            return;
+        }
+
+        alert(
+            "Registration successful!"
+        );
+
+        showLogin();
+
+        document
+            .getElementById("loginEmail")
+            .value = email;
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to connect to backend."
+        );
+    }
+}
+
+
+/* =========================
+   SHOW LOGIN
+========================= */
+
+function showLogin() {
+
+    document
+        .getElementById("registerForm")
+        .style.display = "none";
+
+    document
+        .getElementById("loginForm")
+        .style.display = "block";
+
+    document
+        .getElementById("mfaForm")
+        .style.display = "none";
+
+    document
+        .getElementById("authTitle")
+        .innerText = "Login";
+
+    document
+        .getElementById("authSubtitle")
+        .innerText =
+        "Access your secure vault";
+
+    document
+        .getElementById("switchText")
+        .innerText =
+        "Don't have an account?";
+
+    document
+        .getElementById("switchButton")
+        .innerText =
+        "Register";
+
+    document
+        .getElementById("switchButton")
+        .onclick =
+        showRegister;
+}
+
+
+/* =========================
+   SHOW REGISTER
+========================= */
+
+function showRegister() {
+
+    document
+        .getElementById("loginForm")
+        .style.display = "none";
+
+    document
+        .getElementById("mfaForm")
+        .style.display = "none";
+
+    document
+        .getElementById("registerForm")
+        .style.display = "block";
+
+    document
+        .getElementById("authTitle")
+        .innerText = "Register";
+
+    document
+        .getElementById("authSubtitle")
+        .innerText =
+        "Create your SecureVault account";
+
+    document
+        .getElementById("switchText")
+        .innerText =
+        "Already have an account?";
+
+    document
+        .getElementById("switchButton")
+        .innerText =
+        "Login";
+
+    document
+        .getElementById("switchButton")
+        .onclick =
+        showLogin;
+}
+
+</script>
+
+</body>
+</html>
